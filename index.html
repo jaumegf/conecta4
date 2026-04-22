@@ -493,7 +493,14 @@ class IA_v1 extends IAPlayer {
       board[row][col] = 0;
 
       // 🎲 variabilidad controlada
-      const noisy = score + Math.random() * 5;
+	  const turn = this._getTurn(board);
+	  let noiseLevel = 7;
+   	  // early game → más caos
+	  if (turn < 10) noiseLevel = 9;
+  	  // late game → más precisión
+	  if (turn > 25) noiseLevel = 3;
+
+	  const noisy = score + Math.random() * noiseLevel;
 
       if (noisy > bestScore) {
         bestScore = noisy;
@@ -505,6 +512,16 @@ class IA_v1 extends IAPlayer {
 
     return bestCols[Math.floor(Math.random() * bestCols.length)];
   }
+  
+  _getTurn(board) {
+	  let count = 0;
+	  for (let r = 0; r < 6; r++) {
+		for (let c = 0; c < 7; c++) {
+		  if (board[r][c] !== 0) count++;
+		}
+	  }
+	  return count;
+	}
 
   // ============================
   // 🟣 PATRONES IA2 CLAVE
