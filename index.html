@@ -334,7 +334,7 @@ body::before {
       </div>
     </div>
 
-    <div class="setup-note" id="match-desc">Humano vs Humano</div>
+    <div class="setup-note" id="match-desc">Humano vs AI</div>
   </div>
 
   <button class="btn-main" onclick="startGame()">▶ INICIAR PARTIDA</button>
@@ -814,7 +814,7 @@ const ROWS = 6, COLS = 7;
 let board, currentPlayer, gameOver, busy;
 let players   = {};   // { 1:{type,ai}, 2:{type,ai} }
 let scores    = {1:0, 2:0};
-let setupVals = {1:'human', 2:'human'};
+let setupVals = {1:'human', 2:'ai-1'};
 
 /* ── helpers ── */
 function freshBoard() { return Array.from({length:ROWS}, ()=>Array(COLS).fill(0)); }
