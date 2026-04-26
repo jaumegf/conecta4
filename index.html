@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Conecta 4 — IA Battle Arena</title>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,11 +22,13 @@
   --border: rgba(255,255,255,0.09);
   --text: #dde8f8;
   --muted: #6b85b5;
-  --cell: 76px;
-  --gap: 9px;
+  
+  /* RESPONSIVE: Ajuste dinámico de celda y hueco */
+  --cell: clamp(38px, 11.5vw, 76px);
+  --gap: clamp(4px, 1.2vw, 9px);
 }
 
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; width: 100%; overflow-x: hidden; overflow-y: auto; }
 
 body {
   background: var(--bg);
@@ -35,6 +37,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 10px;
 }
 
 /* ── ambient background ── */
@@ -49,12 +52,12 @@ body::before {
 }
 
 /* ── screens ── */
-.screen { display:none; flex-direction:column; align-items:center; gap:1.75rem; position:relative; z-index:1; }
+.screen { display:none; flex-direction:column; align-items:center; gap:1.25rem; position:relative; z-index:1; width: 100%; }
 .screen.active { display:flex; }
 
 /* ── title ── */
 .logo {
-  font-size: 3.2rem;
+  font-size: clamp(2rem, 8vw, 3.2rem);
   font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -71,14 +74,15 @@ body::before {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 1.75rem 2rem;
-  display: flex; flex-direction:column; gap:1.4rem;
-  min-width: 390px;
+  padding: 1.5rem;
+  display: flex; flex-direction:column; gap:1.2rem;
+  width: 100%;
+  max-width: 420px;
   backdrop-filter: blur(12px);
 }
 
 .player-row {
-  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap: wrap;
 }
 
 .player-label {
@@ -87,18 +91,18 @@ body::before {
 }
 
 .chip {
-  width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  width:24px; height:24px; border-radius:50%; flex-shrink:0;
 }
 .chip.p1 { background:var(--p1); box-shadow:0 0 10px var(--p1-glow); }
 .chip.p2 { background:var(--p2); box-shadow:0 0 10px var(--p2-glow); }
 
 .toggle {
   display:flex; background:rgba(0,0,0,.35);
-  border-radius:10px; padding:3px; gap:3px;
+  border-radius:10px; padding:3px; gap:3px; flex-wrap: wrap;
 }
 .toggle-btn {
-  padding:.38rem .95rem; border:none; border-radius:8px;
-  cursor:pointer; font-size:.82rem; font-weight:700;
+  padding:.4rem .7rem; border:none; border-radius:8px;
+  cursor:pointer; font-size:.75rem; font-weight:700;
   background:transparent; color:var(--muted);
   transition: all .2s;
   font-family: inherit;
@@ -113,55 +117,55 @@ body::before {
 
 /* ── buttons ── */
 .btn-main {
-  padding:.9rem 2.8rem; font-size:1rem; font-weight:800;
+  padding:.9rem 2.5rem; font-size:1rem; font-weight:800;
   border:none; border-radius:13px; cursor:pointer;
   background: linear-gradient(135deg, var(--p1), #b5121f);
   color:#fff; letter-spacing:.06em; text-transform:uppercase;
   box-shadow:0 4px 22px rgba(230,57,70,.45);
   transition: all .2s; font-family:inherit;
 }
-.btn-main:hover { transform:translateY(-2px); box-shadow:0 7px 30px rgba(230,57,70,.55); }
 
 .btn-ghost {
-  padding:.55rem 1.3rem; font-size:.85rem; font-weight:600;
+  padding:.5rem 1rem; font-size:.8rem; font-weight:600;
   border:1px solid var(--border); border-radius:9px;
   background: var(--surface); color:var(--text);
   cursor:pointer; transition: all .2s; font-family:inherit;
 }
-.btn-ghost:hover { background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.22); }
 
 /* ── game header ── */
 .game-header {
   display:flex; align-items:center; justify-content:space-between;
-  width: calc(var(--cell)*7 + var(--gap)*8);
+  width: 100%;
+  max-width: calc(var(--cell)*7 + var(--gap)*8);
+  gap: 5px;
 }
 
 .player-card {
+  flex: 1;
   display:flex; flex-direction:column; align-items:center; gap:.3rem;
-  padding:.6rem 1.1rem; border-radius:11px;
+  padding:.5rem; border-radius:11px;
   border:1px solid transparent; transition: all .3s;
-  min-width:132px;
+  min-width: 0;
 }
 .player-card.active.c1 { background:var(--p1-dim); border-color:rgba(230,57,70,.45); }
 .player-card.active.c2 { background:var(--p2-dim); border-color:rgba(255,209,102,.45); }
 
-.pcard-name { font-size:.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; }
-.pcard-score { font-size:1.6rem; font-weight:900; line-height:1; }
+.pcard-name { font-size:.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; text-align: center; }
+.pcard-score { font-size:1.4rem; font-weight:900; line-height:1; }
 .pcard-score.c1 { color:var(--p1); }
 .pcard-score.c2 { color:var(--p2); }
 .pcard-badge {
-  font-size:.7rem; padding:2px 8px; border-radius:20px;
+  font-size:.6rem; padding:2px 6px; border-radius:20px;
   background:rgba(255,255,255,.07); color:var(--muted);
+  text-align: center; white-space: nowrap; overflow: hidden;
 }
 
 /* ── status bar ── */
 .status {
   height:1.8rem; display:flex; align-items:center; justify-content:center;
-  font-size:.9rem; color:var(--muted); gap:.5rem;
+  font-size:.85rem; color:var(--muted); gap:.5rem; text-align: center;
 }
-.status b { color:var(--text); }
 
-.dots { display:inline-flex; gap:4px; align-items:center; }
 .dot {
   width:6px; height:6px; border-radius:50%;
   background:var(--muted);
@@ -175,133 +179,82 @@ body::before {
 }
 
 /* ── board area ── */
-.board-wrap { position:relative; }
+.board-wrap { position:relative; width: min-content; margin: 0 auto; }
 
-/* drop zone */
 .dropzone {
   display:flex; gap:var(--gap);
   padding: 0 var(--gap);
-  height: 40px; margin-bottom:3px;
+  height: 35px; margin-bottom:3px;
 }
 .dropcol {
   width:var(--cell); display:flex;
   align-items:center; justify-content:center;
   cursor:pointer; border-radius:8px;
-  transition: background .15s;
 }
-.dropcol:hover { background:rgba(255,255,255,.05); }
 .droparrow {
   width:0; height:0;
-  border-left:9px solid transparent;
-  border-right:9px solid transparent;
+  border-left:8px solid transparent;
+  border-right:8px solid transparent;
   border-top:0 solid transparent;
   opacity:0; transition: all .2s;
 }
-.dropcol:hover .droparrow { border-top-width:11px; opacity:.75; }
+.dropcol:hover .droparrow { border-top-width:10px; opacity:.75; }
 .droparrow.c1 { border-top-color: var(--p1); }
 .droparrow.c2 { border-top-color: var(--p2); }
 
-/* board */
 .board {
   background: var(--board);
-  border-radius:15px;
+  border-radius:12px;
   padding:var(--gap);
   display:grid;
   grid-template-rows: repeat(6, var(--cell));
   grid-template-columns: repeat(7, var(--cell));
   gap:var(--gap);
-  box-shadow:
-    0 10px 50px rgba(0,0,0,.6),
-    0 0 0 3px var(--board-deep),
-    inset 0 2px 0 rgba(255,255,255,.08);
+  box-shadow: 0 10px 50px rgba(0,0,0,.6);
   position:relative;
 }
 
-/* cells */
 .cell {
   width:var(--cell); height:var(--cell); border-radius:50%;
   background:var(--hole);
-  box-shadow: inset 0 5px 12px rgba(0,0,0,.7), inset 0 -2px 4px rgba(255,255,255,.04);
-  position:relative; overflow:visible;
+  box-shadow: inset 0 4px 10px rgba(0,0,0,.7);
+  position:relative;
 }
 
 .cell.p1 {
-  background: radial-gradient(circle at 38% 35%, rgba(255,120,120,.6), var(--p1) 55%);
-  box-shadow: inset 0 -5px 10px rgba(0,0,0,.3), 0 0 18px var(--p1-glow);
+  background: radial-gradient(circle at 38% 35%, #ff7878, var(--p1) 55%);
+  box-shadow: 0 0 15px var(--p1-glow);
 }
 .cell.p2 {
-  background: radial-gradient(circle at 38% 35%, rgba(255,245,160,.7), var(--p2) 55%);
-  box-shadow: inset 0 -5px 10px rgba(0,0,0,.3), 0 0 18px var(--p2-glow);
+  background: radial-gradient(circle at 38% 35%, #fff5a0, var(--p2) 55%);
+  box-shadow: 0 0 15px var(--p2-glow);
 }
 
-/* drop animation — piece falls from variable height */
 @keyframes fall {
   0%   { transform:translateY(var(--fall-from)); opacity:.9; }
-  80%  { transform:translateY(4px); }
-  92%  { transform:translateY(-5px); }
   100% { transform:translateY(0); opacity:1; }
 }
-.falling { animation: fall .38s cubic-bezier(.25,.46,.45,.94) forwards; }
+.falling { animation: fall .4s cubic-bezier(.25,.46,.45,.94) forwards; }
 
-/* win pulse */
-@keyframes pulse-win {
-  0%   { transform:scale(.93); }
-  100% { transform:scale(1.06); }
-}
-.win-cell { animation: pulse-win .55s ease-in-out infinite alternate; }
-
-/* ── end overlay ── */
 .overlay {
-  position:absolute; inset:0; border-radius:15px;
-  background:rgba(5,13,28,.86);
-  backdrop-filter:blur(8px);
+  position:absolute; inset:0; border-radius:12px;
+  background:rgba(5,13,28,.9); backdrop-filter:blur(8px);
   display:none; flex-direction:column;
-  align-items:center; justify-content:center; gap:1.4rem;
-  z-index:20;
+  align-items:center; justify-content:center; gap:1.2rem;
+  z-index:20; padding: 1rem;
 }
 .overlay.show { display:flex; }
+.win-msg { font-size:1.5rem; font-weight:900; text-align: center; }
 
-.win-msg {
-  font-size:1.9rem; font-weight:900; letter-spacing:-.01em;
-  animation: fadeUp .4s ease forwards;
-}
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(18px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-.win-msg.c1 { color:var(--p1); text-shadow:0 0 35px var(--p1-glow); }
-.win-msg.c2 { color:var(--p2); text-shadow:0 0 35px var(--p2-glow); }
-.win-msg.draw { color:var(--text); }
-
-.end-btns { display:flex; gap:.9rem; }
-
-.btn-replay {
-  padding:.7rem 1.7rem; font-size:.95rem; font-weight:800;
-  border:none; border-radius:11px; cursor:pointer;
-  background:linear-gradient(135deg,var(--p1),#b5121f);
-  color:#fff; box-shadow:0 4px 18px rgba(230,57,70,.4);
-  transition:all .2s; font-family:inherit;
-}
-.btn-replay:hover { transform:translateY(-2px); }
-
-/* ai tag */
 .ai-tag {
   display:inline-block; font-size:.65rem; font-weight:700;
   padding:2px 7px; border-radius:20px; vertical-align:middle; margin-left:4px;
-  background:rgba(255,255,255,.12); color:var(--muted); letter-spacing:.04em;
+  background:rgba(255,255,255,.12); color:var(--muted);
 }
-
-/* center */
-.center { display:flex; flex-direction:column; align-items:center; gap:.25rem; }
-.vs-label { font-size:.72rem; font-weight:800; color:var(--muted); letter-spacing:.12em; text-transform:uppercase; }
-
-/* disclaimer */
-.disclaimer { color:var(--muted); font-size:.72rem; opacity:.55; text-align:center; }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════ SETUP ═══════════════ -->
 <section class="screen active" id="s-setup">
   <div>
     <div class="logo">CONECTA 4</div>
@@ -309,95 +262,72 @@ body::before {
   </div>
 
   <div class="setup-card">
-
     <div class="player-row">
-      <div class="player-label">
-        <div class="chip p1"></div>
-        Jugador 1
-      </div>
+      <div class="player-label"><div class="chip p1"></div> Jugador 1</div>
       <div class="toggle" id="t1">
         <button class="toggle-btn active" data-v="human">Humano</button>
-        <button class="toggle-btn"        data-v="ai-1">Human AI</button>
-		<button class="toggle-btn"        data-v="ai-2">Perfect AI</button>
+        <button class="toggle-btn" data-v="ai-1">Human AI</button>
+        <button class="toggle-btn" data-v="ai-2">Perfect AI</button>
       </div>
     </div>
 
     <div class="player-row">
-      <div class="player-label">
-        <div class="chip p2"></div>
-        Jugador 2
-      </div>
+      <div class="player-label"><div class="chip p2"></div> Jugador 2</div>
       <div class="toggle" id="t2">
         <button class="toggle-btn" data-v="human">Humano</button>
-		<button class="toggle-btn active" data-v="ai-1">Human AI</button>
-		<button class="toggle-btn"        data-v="ai-2">Perfect AI</button>
+        <button class="toggle-btn active" data-v="ai-1">Human AI</button>
+        <button class="toggle-btn" data-v="ai-2">Perfect AI</button>
       </div>
     </div>
-
     <div class="setup-note" id="match-desc">Humano vs AI</div>
   </div>
 
   <button class="btn-main" onclick="startGame()">▶ INICIAR PARTIDA</button>
-  <p class="disclaimer">@Jaume González Francés</p>
+  <p class="disclaimer" style="color:var(--muted); font-size:.7rem; opacity:.5;">@Jaume González Francés</p>
 </section>
 
-<!-- ═══════════════════════════════════════════ GAME ════════════════ -->
 <section class="screen" id="s-game">
-
   <div class="game-header">
-    <!-- P1 -->
     <div class="player-card c1" id="card1">
-      <div class="pcard-name">Jugador 1</div>
+      <div class="pcard-name">P1</div>
       <div class="pcard-score c1" id="sc1">0</div>
       <div class="pcard-badge" id="badge1">Humano</div>
     </div>
-
-    <div class="center">
-      <div class="vs-label">VS</div>
-      <button class="btn-ghost" onclick="goSetup()" style="margin-top:.35rem;">← Menú</button>
+    <div style="text-align:center">
+      <div style="font-weight:800; opacity:0.3; font-size:0.7rem; margin-bottom:4px;">VS</div>
+      <button class="btn-ghost" onclick="goSetup()">Menú</button>
     </div>
-
-    <!-- P2 -->
     <div class="player-card c2" id="card2">
-      <div class="pcard-name">Jugador 2</div>
+      <div class="pcard-name">P2</div>
       <div class="pcard-score c2" id="sc2">0</div>
       <div class="pcard-badge" id="badge2">Humano</div>
     </div>
   </div>
 
-  <div class="status" id="status">Preparando tablero…</div>
+  <div class="status" id="status"></div>
 
   <div class="board-wrap">
-    <!-- drop zone -->
     <div class="dropzone" id="dz"></div>
-
-    <!-- board grid -->
     <div class="board" id="board"></div>
-
-    <!-- end overlay -->
     <div class="overlay" id="overlay">
       <div class="win-msg" id="win-msg"></div>
-      <div class="end-btns">
-        <button class="btn-replay" onclick="reMatch()">⟳ Revancha</button>
-        <button class="btn-ghost"  onclick="goSetup()">Menú</button>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-main" style="padding:0.6rem 1.2rem;" onclick="reMatch()">Revancha</button>
+        <button class="btn-ghost" onclick="goSetup()">Salir</button>
       </div>
     </div>
   </div>
-
 </section>
 
-
 <script>
-
+/* ──────────────────────────────────────────────────────────────────────────
+   LÓGICA DE IA (SIN TOCAR)
+   ────────────────────────────────────────────────────────────────────────── */
 class IAPlayer {
-  /* Interfaz base: todas las IAs deben implementar getMove(board, validCols) */
   async getMove(board, validCols) { throw new Error("getMove() no implementado"); }
 }
 
-
-//IA Agresive Medium  - Buena para jugar contra persona
 class IA_v1 extends IAPlayer {
-
   constructor(playerNum, depth = 6) {
     super();
     this.playerNum = playerNum;
@@ -405,259 +335,103 @@ class IA_v1 extends IAPlayer {
     this.depth = depth;
     this.name = "Aggressive Medium";
   }
-
   async getMove(board, validCols) {
-
-    // 🥇 WIN
     for (const col of validCols) {
       const row = getLowestRow(board, col);
       board[row][col] = this.playerNum;
-      if (checkWin(board, row, col, this.playerNum)) {
-        board[row][col] = 0;
-        return col;
-      }
+      if (checkWin(board, row, col, this.playerNum)) { board[row][col] = 0; return col; }
       board[row][col] = 0;
     }
-
-    // 🛑 BLOCK
     for (const col of validCols) {
       const row = getLowestRow(board, col);
       board[row][col] = this.oppNum;
-      if (checkWin(board, row, col, this.oppNum)) {
-        board[row][col] = 0;
-        return col;
-      }
+      if (checkWin(board, row, col, this.oppNum)) { board[row][col] = 0; return col; }
       board[row][col] = 0;
     }
-
-    // ============================
-    // 🟣 CAPA IA2 (intuición)
-    // ============================
-
-    // 🔥 GAP PATTERN (X . X)
     for (const col of validCols) {
       const row = getLowestRow(board, col);
-      if (this._isGapPattern(board, row, col, this.playerNum)) {
-        return col;
-      }
+      if (this._isGapPattern(board, row, col, this.playerNum)) return col;
     }
-
-    // 🛑 BLOQUEAR GAP RIVAL
     for (const col of validCols) {
       const row = getLowestRow(board, col);
-      if (this._isGapPattern(board, row, col, this.oppNum)) {
-        return col;
-      }
+      if (this._isGapPattern(board, row, col, this.oppNum)) return col;
     }
-
-    // 🔥 CREAR FORK
     for (const col of validCols) {
       const row = getLowestRow(board, col);
       board[row][col] = this.playerNum;
-
       const wins = this._countWinningMoves(board, this.playerNum);
-
       board[row][col] = 0;
-
       if (wins >= 2) return col;
     }
-
-    // 🛑 BLOQUEAR FORK
     for (const col of validCols) {
       const row = getLowestRow(board, col);
       board[row][col] = this.oppNum;
-
       const wins = this._countWinningMoves(board, this.oppNum);
-
       board[row][col] = 0;
-
       if (wins >= 2) return col;
     }
-
-    // ============================
-    // 🤖 NEGAMAX
-    // ============================
-
     const safeMoves = validCols.filter(col => !this._givesImmediateLoss(board, col));
     const moves = safeMoves.length ? safeMoves : validCols;
-
     let bestScore = -Infinity;
     let bestCols = [];
-
     for (const col of this._orderMoves(moves)) {
       const row = getLowestRow(board, col);
       board[row][col] = this.playerNum;
-
       const score = -this._negamax(board, this.depth - 1, -Infinity, Infinity, this.oppNum);
-
       board[row][col] = 0;
-
-      // 🎲 variabilidad controlada
-	  const turn = this._getTurn(board);
-	  let noiseLevel = 7;
-   	  // early game → más caos
-	  if (turn < 10) noiseLevel = 9;
-  	  // late game → más precisión
-	  if (turn > 25) noiseLevel = 3;
-
-	  const noisy = score + Math.random() * noiseLevel;
-
-      if (noisy > bestScore) {
-        bestScore = noisy;
-        bestCols = [col];
-      } else if (Math.abs(noisy - bestScore) < 4) {
-        bestCols.push(col);
-      }
+      const turn = this._getTurn(board);
+      let noiseLevel = turn < 10 ? 9 : (turn > 25 ? 3 : 7);
+      const noisy = score + Math.random() * noiseLevel;
+      if (noisy > bestScore) { bestScore = noisy; bestCols = [col]; }
+      else if (Math.abs(noisy - bestScore) < 4) { bestCols.push(col); }
     }
-
     return bestCols[Math.floor(Math.random() * bestCols.length)];
   }
-  
-  _getTurn(board) {
-	  let count = 0;
-	  for (let r = 0; r < 6; r++) {
-		for (let c = 0; c < 7; c++) {
-		  if (board[r][c] !== 0) count++;
-		}
-	  }
-	  return count;
-	}
-
-  // ============================
-  // 🟣 PATRONES IA2 CLAVE
-  // ============================
-
-  _isGapPattern(board, r, c, player) {
-    if (r < 0) return false;
-
-    // X . X horizontal
-    if (c >= 2 && c <= 4) {
-      return board[r][c-2] === player && board[r][c+2] === player;
-    }
-
-    return false;
-  }
-
-  _countWinningMoves(board, player) {
-    let count = 0;
-
-    for (let c = 0; c < 7; c++) {
-      const r = getLowestRow(board, c);
-      if (r < 0) continue;
-
-      board[r][c] = player;
-      if (checkWin(board, r, c, player)) count++;
-      board[r][c] = 0;
-    }
-
-    return count;
-  }
-
-  _givesImmediateLoss(board, col) {
-    const row = getLowestRow(board, col);
-    if (row < 0) return true;
-
-    board[row][col] = this.playerNum;
-
-    const oppWins = this._countWinningMoves(board, this.oppNum);
-
-    board[row][col] = 0;
-
-    return oppWins > 0;
-  }
-
-  // ============================
-  // 🤖 NEGAMAX
-  // ============================
-
+  _getTurn(board) { let count = 0; for (let r = 0; r < 6; r++) for (let c = 0; c < 7; c++) if (board[r][c] !== 0) count++; return count; }
+  _isGapPattern(board, r, c, player) { if (r < 0) return false; if (c >= 2 && c <= 4) return board[r][c-2] === player && board[r][c+2] === player; return false; }
+  _countWinningMoves(board, player) { let count = 0; for (let c = 0; c < 7; c++) { const r = getLowestRow(board, c); if (r < 0) continue; board[r][c] = player; if (checkWin(board, r, c, player)) count++; board[r][c] = 0; } return count; }
+  _givesImmediateLoss(board, col) { const row = getLowestRow(board, col); if (row < 0) return true; board[row][col] = this.playerNum; const oppWins = this._countWinningMoves(board, this.oppNum); board[row][col] = 0; return oppWins > 0; }
   _negamax(board, depth, alpha, beta, player) {
     const vc = validCols(board);
-
-    if (depth === 0 || vc.length === 0) {
-      return this._evaluate(board);
-    }
-
+    if (depth === 0 || vc.length === 0) return this._evaluate(board);
     let maxEval = -Infinity;
-
     for (const col of this._orderMoves(vc)) {
       const row = getLowestRow(board, col);
       board[row][col] = player;
-
-      if (checkWin(board, row, col, player)) {
-        board[row][col] = 0;
-        return 100000 - depth;
-      }
-
+      if (checkWin(board, row, col, player)) { board[row][col] = 0; return 100000 - depth; }
       const next = player === this.playerNum ? this.oppNum : this.playerNum;
-
       const score = -this._negamax(board, depth - 1, -beta, -alpha, next);
-
       board[row][col] = 0;
-
       maxEval = Math.max(maxEval, score);
       alpha = Math.max(alpha, score);
-
       if (alpha >= beta) break;
     }
-
     return maxEval;
   }
-
-  _orderMoves(cols) {
-    const order = [3,2,4,1,5,0,6];
-    return cols.slice().sort((a,b) => order.indexOf(a) - order.indexOf(b));
-  }
-
+  _orderMoves(cols) { const order = [3,2,4,1,5,0,6]; return cols.slice().sort((a,b) => order.indexOf(a) - order.indexOf(b)); }
   _evaluate(board) {
     let score = 0;
-
-    // centro
-    for (let r = 0; r < 6; r++) {
-      if (board[r][3] === this.playerNum) score += 15;
-      if (board[r][3] === this.oppNum) score -= 10;
-    }
-
+    for (let r = 0; r < 6; r++) { if (board[r][3] === this.playerNum) score += 15; if (board[r][3] === this.oppNum) score -= 10; }
     const dirs = [[0,1],[1,0],[1,1],[1,-1]];
-
-    for (let r = 0; r < 6; r++) {
-      for (let c = 0; c < 7; c++) {
-        for (const [dr, dc] of dirs) {
-          score += this._evalWindow(board, r, c, dr, dc);
-        }
-      }
-    }
-
+    for (let r = 0; r < 6; r++) for (let c = 0; c < 7; c++) for (const [dr, dc] of dirs) score += this._evalWindow(board, r, c, dr, dc);
     return score;
   }
-
   _evalWindow(board, r, c, dr, dc) {
     let my = 0, opp = 0, empty = 0;
-
     for (let i = 0; i < 4; i++) {
-      const rr = r + dr * i;
-      const cc = c + dc * i;
-
+      const rr = r + dr * i, cc = c + dc * i;
       if (rr < 0 || rr >= 6 || cc < 0 || cc >= 7) return 0;
-
-      if (board[rr][cc] === this.playerNum) my++;
-      else if (board[rr][cc] === this.oppNum) opp++;
-      else empty++;
+      if (board[rr][cc] === this.playerNum) my++; else if (board[rr][cc] === this.oppNum) opp++; else empty++;
     }
-
     if (my > 0 && opp > 0) return 0;
-
     if (my === 3 && empty === 1) return 100;
     if (my === 2 && empty === 2) return 15;
-
     if (opp === 3 && empty === 1) return -120;
     if (opp === 2 && empty === 2) return -20;
-
     return 0;
   }
 }
 
-
-//GEMINI
 class IA_v2 extends IAPlayer {
   constructor(playerNum, depth = 6) {
     super();
@@ -666,60 +440,32 @@ class IA_v2 extends IAPlayer {
     this.depth = depth;
     this.name = "Legend - Gemini";
   }
-
   async getMove(board, validCols) {
-    // 1. GANAR O BLOQUEAR (Sin excepciones)
-    for (const col of validCols) {
-      const row = getLowestRow(board, col);
-      if (this._checkImmediateWin(board, row, col, this.playerNum)) return col;
-    }
-    for (const col of validCols) {
-      const row = getLowestRow(board, col);
-      if (this._checkImmediateWin(board, row, col, this.oppNum)) return col;
-    }
-
-    // 2. FILTRO DE SEGURIDAD GLOBAL (Copiado de la v1, es el secreto de su éxito)
+    for (const col of validCols) { const row = getLowestRow(board, col); if (this._checkImmediateWin(board, row, col, this.playerNum)) return col; }
+    for (const col of validCols) { const row = getLowestRow(board, col); if (this._checkImmediateWin(board, row, col, this.oppNum)) return col; }
     const safeMoves = validCols.filter(col => !this._givesImmediateLoss(board, col));
     const moves = safeMoves.length ? safeMoves : validCols;
-
-    // 3. NEGAMAX CON EVALUACIÓN TÁCTICA IA2
     let bestScore = -Infinity;
     let bestCols = [];
-
     for (const col of this._orderMoves(moves)) {
       const row = getLowestRow(board, col);
       board[row][col] = this.playerNum;
-      
       const score = -this._negamax(board, this.depth - 1, -Infinity, Infinity, this.oppNum);
-      
       board[row][col] = 0;
-
-      // Ruido controlado de la v1 para evitar bloqueos
       const noisy = score + Math.random() * 5;
-
-      if (noisy > bestScore) {
-        bestScore = noisy;
-        bestCols = [col];
-      } else if (Math.abs(noisy - bestScore) < 3) {
-        bestCols.push(col);
-      }
+      if (noisy > bestScore) { bestScore = noisy; bestCols = [col]; }
+      else if (Math.abs(noisy - bestScore) < 3) { bestCols.push(col); }
     }
-
     return bestCols[Math.floor(Math.random() * bestCols.length)];
   }
-
   _negamax(board, depth, alpha, beta, player) {
     const vc = validCols(board);
     if (depth === 0 || vc.length === 0) return this._evaluate(board);
-
     let maxEval = -Infinity;
     for (const col of this._orderMoves(vc)) {
       const row = getLowestRow(board, col);
       board[row][col] = player;
-      if (checkWin(board, row, col, player)) {
-        board[row][col] = 0;
-        return 10000 - depth; // Valor alto pero no infinito
-      }
+      if (checkWin(board, row, col, player)) { board[row][col] = 0; return 10000 - depth; }
       const next = player === this.playerNum ? this.oppNum : this.playerNum;
       const score = -this._negamax(board, depth - 1, -beta, -alpha, next);
       board[row][col] = 0;
@@ -729,56 +475,31 @@ class IA_v2 extends IAPlayer {
     }
     return maxEval;
   }
-
   _evaluate(board) {
     let score = 0;
-    
-    // Control Central (IA2 valora mucho el centro)
-    for (let r = 0; r < 6; r++) {
-      if (board[r][3] === this.playerNum) score += 15;
-      if (board[r][3] === this.oppNum) score -= 15;
-    }
-
-    // Evaluación de Ventanas (v1) + Bonus de Patrones (IA2)
+    for (let r = 0; r < 6; r++) { if (board[r][3] === this.playerNum) score += 15; if (board[r][3] === this.oppNum) score -= 15; }
     const dirs = [[0,1],[1,0],[1,1],[1,-1]];
-    for (let r = 0; r < 6; r++) {
-      for (let c = 0; c < 7; c++) {
-        for (const [dr, dc] of dirs) {
-          score += this._evalWindowTactical(board, r, c, dr, dc);
-        }
-      }
-    }
+    for (let r = 0; r < 6; r++) for (let c = 0; c < 7; c++) for (const [dr, dc] of dirs) score += this._evalWindowTactical(board, r, c, dr, dc);
     return score;
   }
-
   _evalWindowTactical(board, r, c, dr, dc) {
     let my = 0, opp = 0, empty = 0;
     for (let i = 0; i < 4; i++) {
       const rr = r + dr * i, cc = c + dc * i;
       if (rr < 0 || rr >= 6 || cc < 0 || cc >= 7) return 0;
-      if (board[rr][cc] === this.playerNum) my++;
-      else if (board[rr][cc] === this.oppNum) opp++;
-      else empty++;
+      if (board[rr][cc] === this.playerNum) my++; else if (board[rr][cc] === this.oppNum) opp++; else empty++;
     }
-
     if (my > 0 && opp > 0) return 0;
-
-    // Valores equilibrados para que el Negamax pueda "pensar"
     if (my === 3 && empty === 1) return 80;
     if (my === 2 && empty === 2) return 20;
-
     if (opp === 3 && empty === 1) return -100;
     if (opp === 2 && empty === 2) return -30;
-
     return 0;
   }
-
   _givesImmediateLoss(board, col) {
     const row = getLowestRow(board, col);
     if (row < 0) return true;
     board[row][col] = this.playerNum;
-    
-    // Si después de mi movimiento, el oponente tiene ALGUNA forma de ganar, es peligroso.
     let oppCanWin = false;
     for (let c = 0; c < 7; c++) {
       const r = getLowestRow(board, c);
@@ -791,64 +512,30 @@ class IA_v2 extends IAPlayer {
     board[row][col] = 0;
     return oppCanWin;
   }
-
-  _checkImmediateWin(board, r, c, p) {
-    board[r][c] = p;
-    const win = checkWin(board, r, c, p);
-    board[r][c] = 0;
-    return win;
-  }
-
-  _orderMoves(cols) {
-    const order = [3,2,4,1,5,0,6];
-    return cols.slice().sort((a,b) => order.indexOf(a) - order.indexOf(b));
-  }
+  _checkImmediateWin(board, r, c, p) { board[r][c] = p; const win = checkWin(board, r, c, p); board[r][c] = 0; return win; }
+  _orderMoves(cols) { const order = [3,2,4,1,5,0,6]; return cols.slice().sort((a,b) => order.indexOf(a) - order.indexOf(b)); }
 }
 
-
-/* ═══════════════════════════════════════════════════════════════════
-   GAME LOGIC
-═══════════════════════════════════════════════════════════════════ */
+/* ──────────────────────────────────────────────────────────────────────────
+   LÓGICA DEL JUEGO (SIN TOCAR)
+   ────────────────────────────────────────────────────────────────────────── */
 const ROWS = 6, COLS = 7;
+let board, currentPlayer, gameOver, busy, players = {}, scores = {1:0, 2:0}, setupVals = {1:'human', 2:'ai-1'};
 
-let board, currentPlayer, gameOver, busy;
-let players   = {};   // { 1:{type,ai}, 2:{type,ai} }
-let scores    = {1:0, 2:0};
-let setupVals = {1:'human', 2:'ai-1'};
-
-/* ── helpers ── */
 function freshBoard() { return Array.from({length:ROWS}, ()=>Array(COLS).fill(0)); }
-
-function getLowestRow(b, col) {
-  for (let r = ROWS-1; r >= 0; r--) if (b[r][col] === 0) return r;
-  return -1;
-}
-
-function validCols(b) {
-  return Array.from({length:COLS},(_,i)=>i).filter(c => b[0][c] === 0);
-}
-
+function getLowestRow(b, col) { for (let r = ROWS-1; r >= 0; r--) if (b[r][col] === 0) return r; return -1; }
+function validCols(b) { return Array.from({length:COLS},(_,i)=>i).filter(c => b[0][c] === 0); }
 function checkWin(b, row, col, p) {
   const dirs = [[0,1],[1,0],[1,1],[1,-1]];
   for (const [dr, dc] of dirs) {
     const cells = [[row,col]];
-    for (let d=1;d<=3;d++){
-      const [r,c] = [row+dr*d, col+dc*d];
-      if (r>=0&&r<ROWS&&c>=0&&c<COLS&&b[r][c]===p) cells.push([r,c]); else break;
-    }
-    for (let d=1;d<=3;d++){
-      const [r,c] = [row-dr*d, col-dc*d];
-      if (r>=0&&r<ROWS&&c>=0&&c<COLS&&b[r][c]===p) cells.push([r,c]); else break;
-    }
+    for (let d=1;d<=3;d++){ const [r,c] = [row+dr*d, col+dc*d]; if (r>=0&&r<ROWS&&c>=0&&c<COLS&&b[r][c]===p) cells.push([r,c]); else break; }
+    for (let d=1;d<=3;d++){ const [r,c] = [row-dr*d, col-dc*d]; if (r>=0&&r<ROWS&&c>=0&&c<COLS&&b[r][c]===p) cells.push([r,c]); else break; }
     if (cells.length >= 4) return cells;
   }
   return null;
 }
 
-
-/* ═══════════════════════════════════════════════════════════════════
-   UI — SETUP
-═══════════════════════════════════════════════════════════════════ */
 document.querySelectorAll('.toggle').forEach(tg => {
   tg.querySelectorAll('.toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -861,9 +548,8 @@ document.querySelectorAll('.toggle').forEach(tg => {
 });
 
 function refreshDesc() {
-  const n = v => v === 'human' ? 'Humano' : 'IA';
-  document.getElementById('match-desc').textContent =
-    `${n(setupVals[1])} vs ${n(setupVals[2])}`;
+  const n = v => v === 'human' ? 'Humano' : 'AI';
+  document.getElementById('match-desc').textContent = `${n(setupVals[1])} vs ${n(setupVals[2])}`;
 }
 
 function showScreen(id) {
@@ -873,216 +559,99 @@ function showScreen(id) {
 
 function goSetup() { showScreen('s-setup'); }
 
-
-/* ═══════════════════════════════════════════════════════════════════
-   UI — GAME
-═══════════════════════════════════════════════════════════════════ */
 function startGame() {
   [1,2].forEach(p => {
     const t = setupVals[p];
-	
-	let ai = null;
-
-	switch (t) {
-	  case 'ai-1':
-		ai = new IA_v1(p);
-		break;
-
-	  case 'ai-2':
-		ai = new IA_v2(p);
-		break;
-
-	  default:
-		ai = null;
-	}
-
-	players[p] = { 
-	  type: t,
-	  ai
-	};
-
+    let ai = t === 'ai-1' ? new IA_v1(p) : (t === 'ai-2' ? new IA_v2(p) : null);
+    players[p] = { type: t, ai };
     document.getElementById(`badge${p}`).textContent = t.startsWith('ai') ? ('IA ' + players[p].ai.name) : 'Humano';
   });
-  scores = {1:0,2:0};
-  renderScores();
-  showScreen('s-game');
-  initRound();
+  scores = {1:0,2:0}; renderScores();
+  showScreen('s-game'); initRound();
 }
 
 function reMatch() { initRound(); }
 
 function initRound() {
-  board         = freshBoard();
-  currentPlayer = 1;
-  gameOver      = false;
-  busy          = false;
-
+  board = freshBoard(); currentPlayer = 1; gameOver = false; busy = false;
   document.getElementById('overlay').classList.remove('show');
-  buildBoardDOM();
-  buildDropzone();
-  highlightCard();
-  setStatus(`Turno de <b>Jugador 1</b>${players[1].type.startsWith('ai') ? ('<span class="ai-tag">IA' + players[1].type + '</span>') : ''}`);
-
+  buildBoardDOM(); buildDropzone(); highlightCard();
+  setStatus(`Turno de <b>Jugador 1</b>`);
   if (players[1].type.startsWith('ai')) setTimeout(runAI, 500);
 }
 
-/* ── board DOM ── */
 function buildBoardDOM() {
-  const el = document.getElementById('board');
-  el.innerHTML = '';
+  const el = document.getElementById('board'); el.innerHTML = '';
   for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
-    const d = document.createElement('div');
-    d.className = 'cell';
-    d.dataset.r = r; d.dataset.c = c;
-    el.appendChild(d);
+    const d = document.createElement('div'); d.className = 'cell'; d.dataset.r = r; d.dataset.c = c; el.appendChild(d);
   }
 }
 
-function getCell(r,c) {
-  return document.querySelector(`#board .cell[data-r="${r}"][data-c="${c}"]`);
-}
+function getCell(r,c) { return document.querySelector(`#board .cell[data-r="${r}"][data-c="${c}"]`); }
 
-/* ── dropzone ── */
 function buildDropzone() {
-  const dz = document.getElementById('dz');
-  dz.innerHTML = '';
+  const dz = document.getElementById('dz'); dz.innerHTML = '';
   for (let c=0;c<COLS;c++) {
-    const col = document.createElement('div');
-    col.className = 'dropcol';
-    col.dataset.c = c;
-    const arrow = document.createElement('div');
-    arrow.className = `droparrow c${currentPlayer}`;
-    arrow.id = `arr${c}`;
-    col.appendChild(arrow);
-    col.addEventListener('click', () => humanClick(c));
-    dz.appendChild(col);
+    const col = document.createElement('div'); col.className = 'dropcol'; col.dataset.c = c;
+    const arrow = document.createElement('div'); arrow.className = `droparrow c1`;
+    col.appendChild(arrow); col.addEventListener('click', () => humanClick(c)); dz.appendChild(col);
   }
 }
 
-function refreshArrows() {
-  document.querySelectorAll('.droparrow').forEach(a => {
-    a.className = `droparrow c${currentPlayer}`;
-  });
-}
-
-/* ── status ── */
+function refreshArrows() { document.querySelectorAll('.droparrow').forEach(a => { a.className = `droparrow c${currentPlayer}`; }); }
 function setStatus(html) { document.getElementById('status').innerHTML = html; }
+function renderScores() { document.getElementById('sc1').textContent = scores[1]; document.getElementById('sc2').textContent = scores[2]; }
+function highlightCard() { [1,2].forEach(p => { document.getElementById(`card${p}`).classList.toggle('active', p===currentPlayer); }); }
 
-function setThinking() {
-  const n = currentPlayer;
-  setStatus(
-    `<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>` +
-    ` IA ${name} pensando…`
-  );
-}
-
-/* ── score ── */
-function renderScores() {
-  document.getElementById('sc1').textContent = scores[1];
-  document.getElementById('sc2').textContent = scores[2];
-}
-
-/* ── active card highlight ── */
-function highlightCard() {
-  [1,2].forEach(p => {
-    document.getElementById(`card${p}`).classList.toggle('active', p===currentPlayer);
-  });
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════
-   MOVE HANDLING
-═══════════════════════════════════════════════════════════════════ */
 async function humanClick(col) {
-  if (gameOver || busy) return;
-  if (players[currentPlayer].type !== 'human') return;
+  if (gameOver || busy || players[currentPlayer].type !== 'human') return;
   const row = getLowestRow(board, col);
-  if (row < 0) return;
-  await doMove(row, col);
+  if (row >= 0) await doMove(row, col);
 }
 
 async function runAI() {
   if (gameOver || busy) return;
-  busy = true;
-  setThinking();
-  const vc  = validCols(board);
-  const col = await players[currentPlayer].ai.getMove(board.map(r=>[...r]), vc);
-  if (gameOver) { busy=false; return; }
+  busy = true; setStatus(`<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> Pensando...`);
+  const col = await players[currentPlayer].ai.getMove(board.map(r=>[...r]), validCols(board));
   const row = getLowestRow(board, col);
-  busy = false;
-  await doMove(row, col);
+  busy = false; await doMove(row, col);
 }
 
 async function doMove(row, col) {
-  if (busy && players[currentPlayer].type === 'human') return; // doble-click guard
-  busy = true;
-
-  board[row][col] = currentPlayer;
-
-  /* calculate fall distance for animation */
-  const totalCells = row + 1;  // rows to travel (row 0 = top)
-  const cellPx     = 76 + 9;   // cell + gap
-  const fallFrom   = `-${totalCells * cellPx + 50}px`;
-
+  busy = true; board[row][col] = currentPlayer;
   const cell = getCell(row, col);
-  cell.classList.add(`p${currentPlayer}`);
-  cell.style.setProperty('--fall-from', fallFrom);
-  cell.classList.add('falling');
-  cell.addEventListener('animationend', () => cell.classList.remove('falling'), {once:true});
-
-  await sleep(420);
-
-  /* check win */
+  const cellRect = cell.getBoundingClientRect();
+  const gap = parseFloat(getComputedStyle(document.getElementById('board')).gap);
+  
+  cell.style.setProperty('--fall-from', `-${(row + 1) * (cellRect.width + gap) + 50}px`);
+  cell.classList.add(`p${currentPlayer}`, 'falling');
+  
+  await new Promise(r => setTimeout(r, 420));
   const won = checkWin(board, row, col, currentPlayer);
   if (won) {
     won.forEach(([wr,wc]) => getCell(wr,wc).classList.add('win-cell'));
-    scores[currentPlayer]++;
-    renderScores();
-    await sleep(200);
+    scores[currentPlayer]++; renderScores();
     showEndMsg(currentPlayer, false);
-    gameOver = true; busy = false;
-    return;
-  }
-
-  /* check draw */
-  if (validCols(board).length === 0) {
-    await sleep(200);
+    gameOver = true;
+  } else if (validCols(board).length === 0) {
     showEndMsg(null, true);
-    gameOver = true; busy = false;
-    return;
+    gameOver = true;
+  } else {
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    highlightCard(); refreshArrows();
+    setStatus(`Turno de <b>Jugador ${currentPlayer}</b>`);
+    if (players[currentPlayer].type.startsWith('ai')) setTimeout(runAI, 350);
   }
-
-  currentPlayer = currentPlayer===1 ? 2 : 1;
-  highlightCard();
-  refreshArrows();
-  const n = currentPlayer;
-  const typeTag = players[n].type.startsWith('ai') ? '<span class="ai-tag">IA</span>' : '';
-  setStatus(`Turno de <b>Jugador ${n}</b>${typeTag}`);
   busy = false;
-
-  if (players[currentPlayer].type.startsWith('ai')) {
-    setTimeout(runAI, 350);
-  }
 }
 
 function showEndMsg(winner, draw) {
   const overlay = document.getElementById('overlay');
-  const msg     = document.getElementById('win-msg');
-
-  if (draw) {
-    msg.className = 'win-msg draw';
-    msg.textContent = '¡Empate!';
-  } else {
-    const typeLabel = players[winner].type.startsWith('ai') ? players[winner].ai.name : '';
-    msg.className = `win-msg c${winner}`;
-    msg.textContent = `🏆 Jugador ${winner} ${typeLabel} gana`;
-  }
+  const msg = document.getElementById('win-msg');
+  if (draw) { msg.className = 'win-msg draw'; msg.textContent = '¡Empate!'; }
+  else { msg.className = `win-msg c${winner}`; msg.textContent = `🏆 Jugador ${winner} gana`; }
   overlay.classList.add('show');
 }
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-/* boot */
 refreshDesc();
 </script>
 </body>
